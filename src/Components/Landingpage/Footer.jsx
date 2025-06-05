@@ -28,17 +28,24 @@ function Footer() {
           </ul>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 border-t border-gray-700 pt-8 sm:grid-cols-2 lg:grid-cols-4 lg:pt-16">
-          <div>
-            <p className="font-medium text-white">Services</p>
-            <ul className="mt-6 space-y-4 text-sm">
-              {["Auction", "Dashboard", "Create Auction"].map((item, i) => (
-                <li key={i}>
-                  <a href="#" className="text-gray-400 transition hover:opacity-75">{item}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
+       <div className="grid grid-cols-1 gap-8 border-t border-gray-700 pt-8 sm:grid-cols-2 lg:grid-cols-4 lg:pt-16">
+  <div>
+    <p className="font-medium text-white">Services</p>
+    <ul className="mt-6 space-y-4 text-sm">
+      {[
+        { name: "Auction", url: "/auction" },
+        { name: "Dashboard", url: "/dashboard" },
+        { name: "Create Auction", url: "/createauction" },
+      ].map((item, i) => (
+        <li key={i}>
+          <a href={item.url} className="text-gray-400 transition hover:opacity-75">
+            {item.name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
 <div>
   <p className="font-medium text-white">Socials</p>
   <ul className="mt-6 space-y-4 text-sm">
@@ -74,13 +81,12 @@ function Footer() {
           </div>
 
           <div>
-            <p className="font-medium text-white">Legal</p>
-            <ul className="mt-6 space-y-4 text-sm">
-              {["Accessibility", "Returns Policy", "Refund Policy", "Hiring-3 Statistics"].map((item, i) => (
-                <li key={i}>
-                  <a href="#" className="text-gray-400 transition hover:opacity-75">{item}</a>
+            <p className="font-medium text-white">BidCarrot</p>
+            <ul className="mt-4 space-y-4 text-sm">
+
+                <li>
+                  <a className="text-gray-400 transition hover:opacity-75">The future of auctions powered by cutting-edge FinTech innovation. Secure, transparent, and intelligent bidding platform.</a>
                 </li>
-              ))}
             </ul>
           </div>
         </div>
