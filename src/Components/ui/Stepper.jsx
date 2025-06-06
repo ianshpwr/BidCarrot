@@ -2,7 +2,7 @@
 
 import React, { useState, Children, useRef, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import Link from "next/link";
 export default function Stepper({
   children,
   initialStep = 1,
@@ -122,7 +122,7 @@ export default function Stepper({
                 className="duration-350 flex items-center justify-center rounded-full bg-gray-800 py-1.5 px-3.5 font-medium tracking-tight text-white transition hover:bg-black active:bg-green-700"
                 {...nextButtonProps}
               >
-                {isLastStep ? "Complete" : nextButtonText}
+                {isLastStep ? <Link href="/dashboard">Complete</Link> : nextButtonText}
               </button>
             </div>
           </div>

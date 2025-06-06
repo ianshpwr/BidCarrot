@@ -3,6 +3,7 @@
 
 body {
 background-color: black;
+color: white;
 }
 
 
@@ -26,3 +27,28 @@ background-color: black;
     }
   }
 }
+/* .databar{
+  color: white;
+  display: flex;
+  flex-direction: row;
+}
+.datacontainer{
+  display: flex;
+  flex-direction: row;
+}
+.data{
+  display: flex;
+  flex-direction: column;
+}
+.liss{
+  display: flex;
+  flex-direction: row;
+}
+.lis{
+  display: flex;
+  flex-direction: column;
+}
+.des{
+  display: flex;
+  flex-direction: row;
+} */
