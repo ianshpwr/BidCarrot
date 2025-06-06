@@ -1,20 +1,124 @@
-.basicDetails{
+.basicDetails {
     background-color: rgb(36, 36, 36);
     color: white;
     border-radius: 1rem;
     padding: 0.5rem;
     margin: 0.1rem 0;
     margin-bottom: 15px;
-    width: 80%;
-    
+    width:100%;
 }
-.Details{
+
+.basicDetails:focus {
+  box-shadow: 0 0 0 2px rgba(0, 153, 255, 0.5);
+}
+
+.Details {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding: 0.1rem;
 }
-.detailHeading{
+
+.detailHeading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+  
+}
+
+.summary {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border: 1px solid white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  gap: 2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.summaryList {
+  flex: 1;
+  list-style: none;
+  padding: 0;
+  color: white;
+}
+
+.summaryList h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid white;
+  padding-bottom: 0.5rem;
+}
+
+.summaryList li {
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.summaryList li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: cyan;
+}
+
+@media screen and (max-width: 768px) {
+  .summary {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1.2rem;
+  }
+
+  .summaryList {
+    min-width: 100%;
+  }
+
+  .detailHeading {
+    font-size: 1.3rem;
+  }
+
+  .basicDetails {
+    padding: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  .step4 {
+    width: 100%;
+    text-align: center;
+    padding: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .laststep {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+.laststep{
     display: flex;
-    align-items: center;
+    flex-direction: row;
     justify-content: center;
+    gap: 2rem;
+
+
+}
+.step4{
+    border: 1px solid white;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.202);
+
+}
+.step4:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+    cursor: pointer;
 }
