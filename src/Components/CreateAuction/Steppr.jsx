@@ -2,7 +2,7 @@
 import './Steppr.css';
 import { useState } from 'react';
 import Stepper, { Step } from './../ui/Stepper';
-
+import Fileuploadd from './File';
 export default function Steppr() {
   const [name, setName] = useState('');
 
@@ -18,7 +18,7 @@ export default function Steppr() {
     >
       <Step>
         <h2 className='detailHeading'>Basic Information</h2>
-        
+
         <h3 className='detailHeading'>Tell us about your auction item</h3>
         <hr style={{padding:"0.5rem",marginTop:'1rem'}}/>
 
@@ -40,19 +40,9 @@ export default function Steppr() {
       </Step>
 
       <Step>
-        <h2>Step 2</h2>
-        <img
-          style={{
-            height: '100px',
-            width: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center -70px',
-            borderRadius: '15px',
-            marginTop: '1em'
-          }}
-          src="https://www.purrfectcatgifts.co.uk/cdn/shop/collections/Funny_Cat_Cards_640x640.png?v=1663150894"
-        />
-        <p>Custom step content!</p>
+        <h2>Upload Images</h2>
+        <p>Add photos to showcase your item</p>
+        <Fileuploadd />
       </Step>
 
       <Step>
