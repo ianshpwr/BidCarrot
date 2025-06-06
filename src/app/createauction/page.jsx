@@ -1,8 +1,9 @@
+import Stepr from '@/Components/CreateAuction/Steppr';
+
 function CreateAuction() {
   return (
     <div>
-      <h1>Create Auction</h1>
-      <p>This is the Create Auction page.</p>
+      <Stepr/>
     </div>
   );
 }
