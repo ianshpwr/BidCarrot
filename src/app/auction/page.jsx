@@ -1,8 +1,26 @@
+import ProfileCard from "@/Components/ui/Profilecard";
+  
+
 function Auction(){
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <h1 className="text-4xl font-bold mb-4">Auction Page</h1>
-            <p className="text-lg text-gray-700">Welcome to the auction platform!</p>
+        <div>
+            <h1>Live Auctions</h1>
+            <div className="decard">
+                <div>Live Auctions</div>
+                <div>Total Value</div>
+                <div></div>
+                <ProfileCard
+                    name="Javi A. Torres"
+                    title="Software Engineer"
+                    handle="javicodes"
+                    status="Online"
+                    contactText="Contact Me"
+                    avatarUrl="/path/to/avatar.jpg"
+                    showUserInfo={true}
+                    enableTilt={true}
+                    onContactClick={() => console.log('Contact clicked')}
+                />
+            </div>
         </div>
     );
 }
