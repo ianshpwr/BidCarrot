@@ -2,7 +2,8 @@
 
 import React from "react";
 import useAuctions from "@/hooks/useAuction";
-import "./../dashboard/dashboard.css"
+import "./../dashboard/dashboard.css";
+import Link from "next/link";
 
 function Auction() {
   const { liveAuctions, upcomingAuctions, loading } = useAuctions();
@@ -16,7 +17,7 @@ function Auction() {
       <div className="des">
         <div className="lis">
           <p>Current Bid</p>
-          <span>{auction?.CurrentBid}</span>
+          <span>${Number(auction?.CurrentBid).toLocaleString()}</span>
         </div>
         <div className="lis">
           <h4>Bidders</h4>
@@ -35,12 +36,17 @@ function Auction() {
           </span>
         </div>
       </div>
+
+      <div className="auction-actions">
+        <Link href={`/bid/${auction.id}`}>
+          <button className="bid-now-button">Bid Now</button>
+        </Link>
+      </div>
     </div>
   );
 
   return (
     <div className="dashboard">
-
       {loading ? (
         <p>Loading auctions...</p>
       ) : (

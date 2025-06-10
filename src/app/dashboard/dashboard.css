@@ -115,3 +115,30 @@ button:hover {
   padding: 1rem;
   border-radius: 1rem;
 }
+
+
+.bid-now-button {
+  margin-top: 1rem;
+  padding: 8px 16px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #00d4ff, #00c2ff);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bid-now-button:hover {
+  background: linear-gradient(90deg, #00c2ff, #00aaff);
+  transform: scale(1.03);
+}
+
+.auction-actions {
+  margin-top: 12px;
+  text-align: right;
+}
+.dashboard {
+  position: relative; /* <-- fix the warning */
+  padding: 1.5rem;
+}
