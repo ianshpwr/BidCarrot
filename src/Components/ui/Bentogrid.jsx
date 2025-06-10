@@ -207,7 +207,7 @@ export const SkeletonFour = () => {
   return (
     <div
       className="h-60 md:h-60  flex flex-col items-center relative bg-transparent dark:bg-transparent mt-10">
-        <img src='/startupequity.png' />
+        <img src='upequity.png' />
     </div>
   );
 };
