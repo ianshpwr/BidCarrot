@@ -1,31 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Footer from "@/Components/Landingpage/Footer";
 import "./dashboard.css";
-import  supabase  from "@/Components/Supabase/Client";
-
-async function fetchAuctions() {
-  const { data, error } = await supabase.from("Auctions").select("*");
-
-  if (error) {
-    console.error("Error fetching auctions:", error);
-    return [];
-  }
-  return data;
-}
+import Link from "next/link";
+import useAuctions from "@/hooks/useAuction";
 
 function Dashboard() {
-  const [auctions, setAuctions] = useState([]);
-
-  useEffect(() => {
-    async function loadData() {
-      const data = await fetchAuctions();
-      setAuctions(data);
-    }
-
-    loadData();
-  }, []);
+  const { liveAuctions, upcomingAuctions, pastAuctions, loading } = useAuctions();
 
   const renderAuctionCard = (auction) => (
     <div className="datacontainerli" key={auction.id}>
@@ -58,10 +40,6 @@ function Dashboard() {
     </div>
   );
 
-  const activeAuctions = auctions.filter((a) => a?.Status === "Live");
-  const upcomingAuctions = auctions.filter((a) => a?.Status === "Upcoming");
-  const pastAuctions = auctions.filter((a) => a?.Status === "Recent");
-
   return (
     <div className="dashboard">
       <h1>Welcome back! Here's your auction activity</h1>
@@ -72,35 +50,16 @@ function Dashboard() {
         <div className="databarli">Auctions Won</div>
         <div className="databarli">Success Rate</div>
       </div>
-
-      <div className="datacontainer">
-        <div className="data">
-          <h2>Active Auctions</h2>
-          {activeAuctions.length > 0 ? (
-            activeAuctions.map(renderAuctionCard)
-          ) : (
-            <p>No active auctions</p>
-          )}
-        </div>
-
-        <div className="data">
-          <h2>Upcoming Bids</h2>
-          {upcomingAuctions.length > 0 ? (
-            upcomingAuctions.map(renderAuctionCard)
-          ) : (
-            <p>No upcoming auctions</p>
-          )}
-        </div>
-      </div>
-
+      
       <div className="cta-buttons">
-        <button>Create New Auction</button>
-        <button>Browse Auctions</button>
+        <Link href="/createauction"><button>Create New Auction</button></Link>
+        <Link href="/auction"><button>Browse Auctions</button></Link>
       </div>
-
       <div className="pastdata">
         <h2>Past Auctions</h2>
-        {pastAuctions.length > 0 ? (
+        {loading ? (
+          <p>Loading auctions...</p>
+        ) : pastAuctions.length > 0 ? (
           pastAuctions.map(renderAuctionCard)
         ) : (
           <p>No past auctions</p>
