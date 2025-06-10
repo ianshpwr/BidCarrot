@@ -1,10 +1,10 @@
-// hooks/useAuction.js
 import { useEffect, useState } from "react";
 import supabase from "@/Components/Supabase/Client";
 
 export default function useAuctions(id = null) {
   const [liveAuctions, setLiveAuctions] = useState([]);
   const [upcomingAuctions, setUpcomingAuctions] = useState([]);
+  const [pastAuctions, setPastAuctions] = useState([]);
   const [auction, setAuction] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -24,8 +24,10 @@ export default function useAuctions(id = null) {
           console.error("Error fetching auctions:", error);
           return;
         }
+
         setLiveAuctions(data.filter((a) => a?.Status === "Live"));
         setUpcomingAuctions(data.filter((a) => a?.Status === "Upcoming"));
+        setPastAuctions(data.filter((a) => a?.Status === "Recent"));
       }
 
       setLoading(false);
@@ -34,5 +36,11 @@ export default function useAuctions(id = null) {
     fetchAuctions();
   }, [id]);
 
-  return { liveAuctions, upcomingAuctions, auction, loading };
+  return {
+    liveAuctions,
+    upcomingAuctions,
+    pastAuctions,
+    auction,
+    loading,
+  };
 }

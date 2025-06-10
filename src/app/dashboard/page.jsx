@@ -29,12 +29,6 @@ function Dashboard() {
           <span>{auction?.Status}</span>
         </div>
         <div className="lis">
-          <h4>Time</h4>
-          <span>
-            {auction?.Timestamp
-              ? new Date(auction.Timestamp).toLocaleString()
-              : "N/A"}
-          </span>
         </div>
       </div>
     </div>
