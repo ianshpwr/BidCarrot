@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# BidCarrot
+
+BidCarrot is a next-generation online auction platform designed to offer secure, transparent, and intelligent bidding experiences. Built with [Next.js](https://nextjs.org/) and leveraging cutting-edge FinTech innovations, BidCarrot enables real-time bidding on a variety of assets, including NFTs and startup equity, with features such as escrow protection, digital wallet integration, and smart contract automation.
+
+## Features
+
+- **Real-time Bidding:** Experience lightning-fast bidding with live updates and instant notifications.
+- **Escrow Protection:** Funds are securely held in escrow until auction completion.
+- **Digital Wallets & Crypto Support:** Seamless integration with multiple payment methods including cryptocurrencies.
+- **NFT Auctions:** Discover and bid on exclusive NFTs from verified creators.
+- **Startup Equity Auctions:** Bid on equity stakes in promising startups and emerging companies.
+- **Smart Contract Automation:** Transparent, automated execution of auction terms and conditions.
+- **Modern UI:** Built with React, Tailwind CSS, and motion animations for a smooth user experience.
 
 ## Getting Started
 
-First, run the development server:
+To get started with BidCarrot locally:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ianshpwr/BidCarrot.git
+   cd BidCarrot
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   # or
+   bun install
+   ```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   # or
+   bun dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+
+You can start editing the application by modifying files in the `app/` directory. The page auto-updates as you edit the file.
+
+## File Upload
+
+BidCarrot offers a user-friendly file upload component for auction item submissions, with drag-and-drop support and file previews.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js Interactive Tutorial](https://nextjs.org/learn)
+- [Vercel Deployment](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Socials & Contact
 
-## Deploy on Vercel
+- **LinkedIn:** [ianshpwr](https://www.linkedin.com/in/ianshpwr)
+- **GitHub:** [ianshpwr](https://github.com/ianshpwr)
+- **Instagram:** [ianshpwr](https://instagram.com/ianshpwr)
+- **Email:** ianshpwr@gmail.com
+- **Phone:** +91 8571851175
+- **Location:** Delhi NCR
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+&copy; 2025 BidCarrot. All rights reserved.
