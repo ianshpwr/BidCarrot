@@ -6,11 +6,12 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 export default function AuthPage() {
-  const [redirectTo, setRedirectTo] = useState<string | undefined>(undefined);
+  const [redirectTo, setRedirectTo] = useState(undefined);
 
   useEffect(() => {
-    // Ensure this runs only on client
-    setRedirectTo(`${window.location.origin}/dashboard`);
+    if (typeof window !== "undefined") {
+      setRedirectTo(`${window.location.origin}/dashboard`);
+    }
   }, []);
 
   return (
