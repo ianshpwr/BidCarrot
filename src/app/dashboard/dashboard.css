@@ -1,144 +1,120 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-
 body {
-  background-color: black;
-  color: white;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  display: flex;
-  animation: marquee 10s linear infinite;
-}
-
-@theme inline {
-  --animate-scroll: scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite;
-
-  @keyframes scroll {
-    to {
-      transform: translate(calc(-50% - 0.5rem));
-    }
-  }
+  background-color: #000;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .dashboard {
   padding: 2rem;
-  font-family: sans-serif;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.dashboard h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
 }
 
 .databar {
   display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-  color: #00ffff;
-  font-weight: bold;
-}
-
-.databarli {
-  padding: 0.5rem 1rem;
-  background-color: #1a1a1a;
-  border-radius: 0.5rem;
-}
-
-.datacontainer {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
+.databarli {
+  background-color: #1A1A1A;
+  color: #0ff;
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  cursor: default;
+}
 
-.data {
+.cta-buttons {
   display: flex;
-  flex-direction: column;
-  background-color: #1f1f1f;
-  padding: 1rem;
-  border-radius: 1rem;
-  width: 100%;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+.cta-buttons button {
+  background-color: #009DFF;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.cta-buttons button:hover {
+  background-color: #0077CC;
+}
+
+.pastdata h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
 }
 
 .datacontainerli {
-  margin-top: 1rem;
-  background-color: #2a2a2a;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
+  background-color: #1A1A1A;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s ease;
+}
+.datacontainerli:hover {
+  transform: scale(1.01);
 }
 
 .liss {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
 }
-
-.lis {
-  display: flex;
-  flex-direction: column;
-  margin-right: 1rem;
+.liss h3 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #fff;
+}
+.liss span {
+  font-size: 0.9rem;
+  color: #aaa;
 }
 
 .des {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
-
-button {
-  margin-right: 1rem;
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #0088cc;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #006699;
-}
-
-.pastdata {
-  margin-top: 2rem;
-  background-color: #1a1a1a;
+.lis {
+  flex: 1 1 200px;
+  background-color: #262626;
   padding: 1rem;
-  border-radius: 1rem;
-}
-
-
-.bid-now-button {
-  margin-top: 1rem;
-  padding: 8px 16px;
-  font-weight: 600;
-  background: linear-gradient(90deg, #00d4ff, #00c2ff);
-  color: #000;
-  border: none;
   border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  text-align: center;
 }
-
-.bid-now-button:hover {
-  background: linear-gradient(90deg, #00c2ff, #00aaff);
-  transform: scale(1.03);
+.lis p,
+.lis h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: #ccc;
 }
-
-.auction-actions {
-  margin-top: 12px;
-  text-align: right;
+.lis span {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
 }
-.dashboard {
-  position: relative; /* <-- fix the warning */
-  padding: 1.5rem;
+footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid #333;
+  color: #aaa;
+  text-align: center;
+  font-size: 0.9rem;
 }

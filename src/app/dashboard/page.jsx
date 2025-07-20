@@ -28,8 +28,6 @@ function Dashboard() {
           <h4>Status</h4>
           <span>{auction?.Status}</span>
         </div>
-        <div className="lis">
-        </div>
       </div>
     </div>
   );
