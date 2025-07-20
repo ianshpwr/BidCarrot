@@ -1,4 +1,6 @@
-import supabase from "./../../Components/Supabase/Client";
+"use client";
+
+import supabase from "@/Components/Supabase/Client"; 
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 
