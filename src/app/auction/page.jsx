@@ -2,7 +2,7 @@
 
 import React from "react";
 import useAuctions from "@/hooks/useAuction";
-import "./../dashboard/dashboard.css";
+import "./auction.css";
 import Link from "next/link";
 
 function Auction() {
@@ -26,14 +26,6 @@ function Auction() {
         <div className="lis">
           <h4>Status</h4>
           <span>{auction?.Status}</span>
-        </div>
-        <div className="lis">
-          {/* <h4>Time</h4>
-          <span>
-            {auction?.Timestamp
-              ? new Date(auction.Timestamp).toLocaleString()
-              : "N/A"}
-          </span> */}
         </div>
       </div>
 
