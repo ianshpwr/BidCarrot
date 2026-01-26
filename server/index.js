@@ -1,10 +1,6 @@
-const app = require('express')();
-const http = require('http').createServer(app);
+require("dotenv").config();
+const app = require("./app");
 
-// const io = require('socket.io')(http);
-
-
-const PORT = process.env.PORT || 3000;
-
-
-
+app.listen(process.env.PORT || 5000, () => {
+  console.log("Server running...");
+});

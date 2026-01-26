@@ -1,100 +1,72 @@
-// ----------------------
-//  Prisma Configuration
-// ----------------------
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+  
 }
 
-
-
-// ----------------------
-//        Models
-// ----------------------
-
-// 1. USERS
 model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
-  password  String   // hashed password
-  balance   Decimal  @default(0.0)
+  password  String
+  wallet    Int      @default(50000)
+
+  // Relations
+  bids      Bid[]
+  auctions  Auction[] @relation("SellerAuctions")
+  winnerOf  Auction[] @relation("Winner")
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  listedAssets    Asset[]    @relation("UserListedAssets")
-  acquiredAssets  Asset[]    @relation("UserAcquiredAssets")
-  bids            Bid[]
 }
 
+model Auction {
+  id            String         @id @default(uuid())
+  title         String
+  description   String
+  basePrice     Int
+  durationMs    Int
+  endTime       DateTime
+  status        AuctionStatus  @default(ACTIVE)
 
+  // Seller relation
+  sellerId      String
+  seller        User           @relation("SellerAuctions", fields: [sellerId], references: [id])
 
-// 2. ASSETS (Items Available for Bidding)
-model Asset {
-  id                 String    @id @default(uuid())
-  productName        String
-  productType        String
-  description        String?
-  startingAmount     Decimal
-  currentHighestBid  Decimal   @default(0.0)
+  // Bids
+  bids          Bid[]
 
-  status             AssetStatus @default(ACTIVE)
+  // Winner relation (optional)
+  winnerId      String?
+  winner        User?          @relation("Winner", fields: [winnerId], references: [id])
 
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  highestBid    Int            @default(0)
 
-  // Relations
-  listedById         String
-  listedBy           User      @relation("UserListedAssets", fields: [listedById], references: [id])
+  // Not a relation, just storing userId
+  currentHolder String?
 
-  acquiredById       String? 
-  acquiredBy         User?     @relation("UserAcquiredAssets", fields: [acquiredById], references: [id])
-
-  finalAmount        Decimal?
-  bids               Bid[]
-  images             AssetImage[]
+  createdAt     DateTime       @default(now())
 }
 
-
-
-// 3. BIDS (Bidding History)
 model Bid {
   id        String   @id @default(uuid())
-  amount    Decimal
-  createdAt DateTime @default(now())
-
-  // Foreign Keys
-  assetId   String
-  asset     Asset    @relation(fields: [assetId], references: [id])
+  amount    Int
+  time      DateTime @default(now())
 
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+
+  auctionId String
+  auction   Auction  @relation(fields: [auctionId], references: [id])
 }
 
-
-
-// 4. ASSET IMAGES (Optional but very useful)
-model AssetImage {
-  id       String @id @default(uuid())
-  url      String
-
-  assetId  String
-  asset    Asset  @relation(fields: [assetId], references: [id])
-}
-
-
-
-// ----------------------
-//      ENUMS
-// ----------------------
-enum AssetStatus {
+enum AuctionStatus {
   ACTIVE
-  SOLD
-  EXPIRED
+  ENDED
+  PAYMENT_PENDING
+  COMPLETED
   CANCELLED
 }
