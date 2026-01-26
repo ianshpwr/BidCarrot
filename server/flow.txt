@@ -1,0 +1,52 @@
+we have two routes /signup and /login
+when /login or /signup is called (then from routes folder auth.routes /signup or /login will be used) then AUTHCONTROLLER will be called 
+(inside AUTHCONTROLLER services will be called (there's a code exports.signup = async (req,res)=>{
+    const response  = await authService.signup(req.body);
+    res.json(response)
+}))
+
+here what is happening? 
+
+we are taking service login from auth.service then, authService is an object with two logics .signup and .login, 
+from there login and signup logic is taken used in controller
+
+on signup (name,email,password) is required okay;
+
+and on login email password is required 
+
+_duplicate user is not handled_
+
+NOW AUCTION TIME CREATE AND FETCH
+
+i have three routes 
+/create 
+/active
+/:id 
+
+in /create route is called in routes and then in controller logic is called
+(my logic takes in sellerID that means user id and data (data includes TITLE, DESCRIPTION, BasePrice, durationMs, sellerID, endTIme, highestBid))
+
+in /active it returns me all active auctions
+
+in /:id it returns me the specific bid by id 
+
+BIDDING logic
+
+/:auctionId 
+
+first it will check if auth is done
+then placing bid 
+
+placing bids require userid auctionId amount 
+then placeBid logic will be taken from services
+
+first it finds the unique auction 
+then checks if amount is greater than the currentBid or not 
+
+then decrements the amount from the bidders wallet
+
+then checks if there's current holder of auction and refunds his amount in his wallet 
+then a bid is created with data userId auctionId and amount 
+then updates the auction with id and data as highestBid : amount , currentHolder: userID 
+
+
