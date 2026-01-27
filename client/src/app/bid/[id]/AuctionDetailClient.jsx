@@ -16,7 +16,7 @@ export default function AuctionDetailClient({ id }) {
   const [loading, setLoading] = useState(true);
   const [bidAmount, setBidAmount] = useState("");
   const [placeBidLoading, setPlaceBidLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   // Temporary mock images until backend supports themes
   const getAuctionImage = (title) => {
@@ -55,6 +55,7 @@ export default function AuctionDetailClient({ id }) {
       // Refresh auction data
       const res = await auctions.getOne(id);
       setAuction(res.data);
+      if (refreshUser) refreshUser();
       setBidAmount("");
     } catch (err) {
       toast.error(err.response?.data?.message || err.message || "Failed to place bid");

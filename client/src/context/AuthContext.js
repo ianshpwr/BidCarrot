@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "@/lib/api";
+import { auth, users } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { FullScreenLoader } from "@/Components/ui/Loader";
 
@@ -29,10 +29,9 @@ export function AuthProvider({ children }) {
   }, [router]);
 
   useEffect(() => {
-    const initAuth = () => {
+    const initAuth = async () => {
       const token = localStorage.getItem("token");
       if (token) {
-        // Robust check: Validate expiry
         const decoded = parseJwt(token);
         if (decoded && decoded.exp * 1000 < Date.now()) {
           console.warn("Token expired");
@@ -42,15 +41,22 @@ export function AuthProvider({ children }) {
         }
 
         try {
+          // Attempt to fetch fresh profile data
+          const res = await users.getProfile();
+          setUser(res.data);
+        } catch (e) {
+          console.error("Auth init error - fetching profile failed", e);
+          // Fallback to stored info if offline/error, or logout if critical
           const storedUser = localStorage.getItem("user_info");
           if (storedUser) {
              setUser(JSON.parse(storedUser));
           } else {
-             setUser({ name: "User" }); 
+             // If we can't get profile and have no stored info, but have token, 
+             // we might want to logout or just show a basic state.
+             // letting it stay logged in with partial info is risky if token is invalid.
+             // But valid token + failed profile fetch usually means API issue.
+             logout();
           }
-        } catch (e) {
-          console.error("Auth init error", e);
-          logout();
         }
       }
       setLoading(false);
@@ -68,9 +74,14 @@ export function AuthProvider({ children }) {
       
       if (token) {
         localStorage.setItem("token", token);
-        const userInfo = { email, name: email.split('@')[0] };
-        localStorage.setItem("user_info", JSON.stringify(userInfo));
-        setUser(userInfo);
+        
+        // Fetch full profile immediately
+        const profileRes = await users.getProfile();
+        const fullUser = profileRes.data;
+        
+        localStorage.setItem("user_info", JSON.stringify(fullUser));
+        setUser(fullUser);
+        
         router.push("/dashboard");
         return { success: true };
       }
@@ -89,7 +100,6 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       await auth.signup({ name, email, password });
-      // Usually generic success, user still needs to login or we auto-login
       return { success: true };
     } catch (err) {
       const message = err.message || "Signup failed";
@@ -100,10 +110,20 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const res = await users.getProfile();
+      setUser(res.data);
+      localStorage.setItem("user_info", JSON.stringify(res.data));
+    } catch (error) {
+      console.error("Failed to refresh user", error);
+    }
+  };
+
   if (loading) return <FullScreenLoader />;
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, error, setError }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading, error, setError, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
