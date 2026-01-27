@@ -73,7 +73,6 @@ export default function AuthPage() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
          {/* Blobs removed for cleaner theme matching landing page */}
       </div>
-
       <Card className="w-full max-w-md relative z-10">
         <h2 className="text-3xl font-bold mb-2 text-center gradient-text">
           {isLogin ? "Welcome Back" : "Join BidCarrot"}

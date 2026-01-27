@@ -6,6 +6,7 @@ import CardHoverEffect from '@/Components/Landingpage/Testemonials';
 import Stats from '@/Components/ui/Stats';
 import GlobeF from '@/Components/Landingpage/GlobeFull';
 export default function Home() {
+  console.log(process.env.NEXT_PUBLIC_API_URL);
   return (
     <>
     <div>
