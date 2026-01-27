@@ -10,6 +10,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3001",
+      "https://bidcarrot.vercel.app",
       "https://bidcarrot.onrender.com"
     ],
     credentials: true,
