@@ -1,11 +1,10 @@
 import AuctionDetailClient from "./AuctionDetailClient";
-import env from "@/lib/env";
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
   
   try {
-    const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/auctions/${id}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auctions/${id}`);
     if (!res.ok) {
         return {
             title: "Auction Not Found | BidCarrot",
