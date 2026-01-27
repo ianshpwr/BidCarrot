@@ -1,104 +1,122 @@
 "use client";
-
-import {
-  Navbar,
-  NavBody,
-  NavItems,
-  MobileNav,
-  NavbarLogo,
-  NavbarButton,
-  MobileNavHeader,
-  MobileNavToggle,
-  MobileNavMenu,
-} from "@/Components/ui/ResizeableNavbar";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/Components/ui/Button";
+import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbarr() {
-  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Auction", link: "/auction" },
+    { name: "Live Auctions", link: "/auction" },
     { name: "Dashboard", link: "/dashboard" },
     { name: "Create Auction", link: "/createauction" },
   ];
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Fetch initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    // Subscribe to auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleLoginClick = () => {
-    if (!user) {
-      router.push("/login");
-    }
-  };
-
   return (
-    <div className="relative w-full">
-      <Navbar>
-        <NavBody>
-          <NavbarLogo />
-          <NavItems items={navItems} />
-          <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary" onClick={handleLoginClick}>
-              {user ? user.email || "User" : "Login"}
-            </NavbarButton>
-          </div>
-        </NavBody>
+    <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-4">
+      <div className="max-w-7xl mx-auto glass rounded-full px-6 py-3 flex items-center justify-between">
+        
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-xl font-bold tracking-tighter gradient-text">
+            BidCarrot
+          </span>
+        </Link>
 
-        <MobileNav>
-          <MobileNavHeader>
-            <NavbarLogo />
-            <MobileNavToggle
-              isOpen={isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            />
-          </MobileNavHeader>
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-8">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              href={item.link}
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
 
-          <MobileNavMenu
-            isOpen={isMobileMenuOpen}
-            onClose={() => setIsMobileMenuOpen(false)}
+        {/* Auth Buttons */}
+        <div className="hidden md:flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-300">
+                Hi, {user.name || user.email?.split('@')[0]}
+              </span>
+              <Button variant="secondary" onClick={logout} className="text-xs px-3 py-1">
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <Link href="/login">
+              <Button variant="primary" className="text-xs px-4 py-2">
+                Login
+              </Button>
+            </Link>
+          )}
+        </div>
+
+        {/* Mobile Toggle */}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setIsMobileMenuOpen(true)}
+        >
+          <Menu size={24} />
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-20 left-4 right-4 glass rounded-2xl p-6 flex flex-col gap-4 md:hidden"
           >
-            {navItems.map((item, idx) => (
-              <a
-                key={`mobile-link-${idx}`}
+             <div className="flex justify-between items-center mb-4">
+                <span className="font-bold">Menu</span>
+                <button onClick={() => setIsMobileMenuOpen(false)}>
+                  <X size={24} />
+                </button>
+             </div>
+             
+             {navItems.map((item) => (
+              <Link
+                key={item.name}
                 href={item.link}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="relative text-neutral-600 dark:text-neutral-300"
+                className="text-lg text-gray-300 hover:text-white"
               >
-                <span className="block">{item.name}</span>
-              </a>
+                {item.name}
+              </Link>
             ))}
-            <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  handleLoginClick();
-                }}
-                variant="primary"
-                className="w-full"
-              >
-                {user ? user.email || "User" : "Login"}
-              </NavbarButton>
+
+            <div className="mt-4 pt-4 border-t border-white/10">
+              {user ? (
+                <div className="flex flex-col gap-3">
+                  <span className="text-sm text-gray-400">
+                    Signed in as {user.email}
+                  </span>
+                  <Button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="w-full">
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="primary" className="w-full">
+                    Login
+                  </Button>
+                </Link>
+              )}
             </div>
-          </MobileNavMenu>
-        </MobileNav>
-      </Navbar>
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
   );
 }

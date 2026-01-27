@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import { FileUpload } from "@/Components/ui/Fileupload";
 
-export default function FileUploadd(){
+export default function FileUploadd({ onFilesChange }){
   const [files, setFiles] = useState([]);
   const handleFileUpload = (files) => {
     setFiles(files);
-    console.log(files);
+    if (onFilesChange) {
+      onFilesChange(files);
+    }
   };
 
   return (

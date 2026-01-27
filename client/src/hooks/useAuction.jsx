@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import supabase from "@/Components/Supabase/Client";
+import { auctions } from "@/lib/api";
 
 export default function useAuctions(id = null) {
   const [liveAuctions, setLiveAuctions] = useState([]);
@@ -10,27 +10,29 @@ export default function useAuctions(id = null) {
 
   useEffect(() => {
     async function fetchAuctions() {
-      if (id) {
-        const { data, error } = await supabase
-          .from("Auctions")
-          .select("*")
-          .eq("id", id)
-          .single();
+      try {
+        if (id) {
+          const response = await auctions.getOne(id);
+          setAuction(response.data);
+        } else {
+          const response = await auctions.getAll();
+          const data = response.data;
+          
+          // Ensure data is an array before filtering
+          const auctionsList = Array.isArray(data) ? data : (data.auctions || []);
 
-        if (!error) setAuction(data);
-      } else {
-        const { data, error } = await supabase.from("Auctions").select("*");
-        if (error) {
-          console.error("Error fetching auctions:", error);
-          return;
+          // Backend uses 'ACTIVE', 'ENDED', etc.
+          // Mapping 'ACTIVE' to liveAuctions. 
+          // Note: Backend getActive only returns ACTIVE, so others might be empty.
+          setLiveAuctions(auctionsList.filter((a) => a?.status === "ACTIVE"));
+          setUpcomingAuctions(auctionsList.filter((a) => a?.status === "UPCOMING" || a?.status === "PENDING")); 
+          setPastAuctions(auctionsList.filter((a) => a?.status === "ENDED" || a?.status === "COMPLETED"));
         }
-
-        setLiveAuctions(data.filter((a) => a?.Status === "Live"));
-        setUpcomingAuctions(data.filter((a) => a?.Status === "Upcoming"));
-        setPastAuctions(data.filter((a) => a?.Status === "Recent"));
+      } catch (error) {
+        console.error("Error fetching auctions:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     fetchAuctions();
