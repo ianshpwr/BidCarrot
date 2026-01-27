@@ -89,6 +89,9 @@ export const auctions = {
   create: async (auctionData) => {
     return api.post('/auctions/create', auctionData);
   },
+  delete: async (id) => {
+    return api.delete(`/auctions/${id}`);
+  },
 };
 
 export const bids = {

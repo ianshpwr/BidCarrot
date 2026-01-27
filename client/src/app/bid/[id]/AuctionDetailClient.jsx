@@ -118,6 +118,11 @@ export default function AuctionDetailClient({ id }) {
                  <div>
                    <p className="text-gray-400 mb-1">Current Highest Bid</p>
                    <p className="text-5xl font-black gradient-text">${currentPrice.toLocaleString()}</p>
+                   {auction.highestBid > 0 && (
+                      <p className="text-sm text-gray-400 mt-2">
+                         Held by: <span className="text-white font-bold">{auction.currentHolder || auction.latestBid?.bidderName || "Anonymous"}</span>
+                      </p>
+                   )}
                  </div>
                  <div className="text-right">
                     <p className="text-gray-400 mb-1">Total Bids</p>
@@ -126,6 +131,12 @@ export default function AuctionDetailClient({ id }) {
               </div>
 
               {user ? (
+                auction.sellerId === user.id ? (
+                   <div className="text-center py-6 bg-white/5 rounded-xl border border-white/10">
+                      <p className="text-gray-300 font-bold mb-2">You are the owner of this auction.</p>
+                      <p className="text-sm text-gray-500">You cannot place bids on your own items.</p>
+                   </div>
+                ) : (
                 <form onSubmit={handlePlaceBid} className="space-y-4">
                    <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -150,6 +161,7 @@ export default function AuctionDetailClient({ id }) {
                      By placing a bid, you agree to our Terms of Service
                    </p>
                 </form>
+                )
               ) : (
                 <div className="text-center py-6">
                    <p className="text-gray-400 mb-4">Please login to participate in this auction</p>

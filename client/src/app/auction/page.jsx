@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import useAuctions from "@/hooks/useAuction";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { Card } from "@/Components/ui/Card";
 import { Button } from "@/Components/ui/Button";
@@ -12,12 +13,17 @@ import Image from "next/image";
 export default function Auction() {
   const { liveAuctions, loading } = useAuctions();
 
+  const { user } = useAuth(); // Import useAuth hook first
+  
   const getAuctionImage = (title) => {
     return "https://images.unsplash.com/photo-1550534791-2677533605ab?q=80&w=800&auto=format&fit=crop"; 
   };
 
-  const renderAuctionCard = (auction) => (
-    <Card key={auction.id} className="group hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden p-0 h-full">
+  const renderAuctionCard = (auction) => {
+    const isOwner = user && auction.sellerId === user.id;
+
+    return (
+    <Card key={auction.id} className={`group hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden p-0 h-full ${isOwner ? 'border-2 border-green-500/30' : ''}`}>
        <div className="absolute inset-0 z-0">
           <Image 
             src={getAuctionImage(auction.title)} 
@@ -30,10 +36,15 @@ export default function Auction() {
        </div>
 
        <div className="relative z-10 p-6 flex flex-col h-full min-h-[350px] justify-end">
-          <div className="mb-auto">
+          <div className="mb-auto flex justify-between">
             <span className="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider">
               {auction.status}
             </span>
+            {isOwner && (
+               <span className="bg-green-500 text-black text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+                 Your Listing
+               </span>
+            )}
           </div>
           
           <h3 className="text-2xl font-bold text-white mb-2 leading-tight">{auction.title}</h3>
@@ -51,13 +62,16 @@ export default function Auction() {
           </div>
 
           <Link href={`/bid/${auction.id}`} className="w-full">
-            <Button variant="primary" className="w-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white">
-              Place Bid
+            <Button 
+                variant={isOwner ? "secondary" : "primary"} 
+                className={`w-full backdrop-blur-md border font-bold ${isOwner ? 'bg-green-500/20 border-green-500/50 text-green-400 hover:bg-green-500/30' : 'bg-white/10 hover:bg-white/20 border-white/20 text-white'}`}
+            >
+              {isOwner ? "View Details" : "Place Bid"}
             </Button>
           </Link>
        </div>
     </Card>
-  );
+  )};
 
   return (
     <div className="min-h-screen pt-36 pb-12 px-4 max-w-7xl mx-auto">

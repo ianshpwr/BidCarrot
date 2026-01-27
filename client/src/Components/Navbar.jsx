@@ -78,11 +78,11 @@ export default function Navbarr() {
                         <p className="text-xs text-gray-400">Signed in as</p>
                         <p className="text-sm font-bold text-white truncate">{user.email}</p>
                       </div>
-                      <Link href="/dashboard" onClick={() => setIsProfileOpen(false)}>
+                      {/* <Link href="/dashboard" onClick={() => setIsProfileOpen(false)}>
                         <div className="px-4 py-2 hover:bg-white/5 flex items-center gap-2 text-sm text-gray-300 hover:text-white cursor-pointer transition-colors">
                            <User size={16} /> Profile
                         </div>
-                      </Link>
+                      </Link> */}
                       <button 
                         onClick={() => { logout(); setIsProfileOpen(false); }}
                         className="w-full text-left px-4 py-2 hover:bg-red-500/10 flex items-center gap-2 text-sm text-red-400 hover:text-red-300 cursor-pointer transition-colors"
