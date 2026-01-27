@@ -10,8 +10,16 @@ export class ApiError extends Error {
   }
 }
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+if (!apiUrl) {
+  console.error("CRITICAL: NEXT_PUBLIC_API_URL is not defined. API calls will fail.");
+  // Fallback to localhost for dev, or empty string (which causes relative path = 405 on/auth/login)
+  // We can't fix this for them, but we can warn.
+}
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: apiUrl,
   headers: {
     'Content-Type': 'application/json',
   },
