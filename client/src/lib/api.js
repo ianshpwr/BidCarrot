@@ -99,7 +99,7 @@ export const bids = {
 
 export const users = {
   getProfile: async () => {
-    return api.get('/users/profile');
+    return api.get('/auth/me');
   },
 };
 

@@ -6,18 +6,19 @@ const bidRoutes = require("./routes/bid.routes.js");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3001",
-      "https://bidcarrot.vercel.app",
-      "https://bidcarrot.onrender.com"
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-  })
-);
+const corsOptions = {
+  origin: [
+    "http://localhost:3001",
+    "https://bidcarrot.vercel.app",
+    "https://bidcarrot.onrender.com",
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+
 app.use(express.json());
 app.use(express.static("public"));
 
