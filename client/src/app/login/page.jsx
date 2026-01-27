@@ -15,6 +15,10 @@ export default function AuthPage() {
   const { login, signup } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+console.log(
+  'API URL at runtime:',
+  process.env.NEXT_PUBLIC_API_URL
+);
 
   const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
