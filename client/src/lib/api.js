@@ -97,10 +97,4 @@ export const bids = {
   },
 };
 
-export const users = {
-  getProfile: async () => {
-    return api.get('/auth/me');
-  },
-};
-
 export default api;

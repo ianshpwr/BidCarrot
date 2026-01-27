@@ -22,6 +22,9 @@ exports.login = async ({ email, password }) => {
   if (!match) return { error: "Invalid password" };
 
   const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+  
+  // Exclude password
+  const { password: _, ...userWithoutPassword } = user;
 
-  return { message: "Login successful", token };
+  return { message: "Login successful", token, user: userWithoutPassword };
 };

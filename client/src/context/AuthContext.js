@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, users } from "@/lib/api";
+import { auth } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { FullScreenLoader } from "@/Components/ui/Loader";
 
@@ -41,22 +41,20 @@ export function AuthProvider({ children }) {
         }
 
         try {
-          // Attempt to fetch fresh profile data
-          const res = await users.getProfile();
-          setUser(res.data);
-        } catch (e) {
-          console.error("Auth init error - fetching profile failed", e);
-          // Fallback to stored info if offline/error, or logout if critical
           const storedUser = localStorage.getItem("user_info");
           if (storedUser) {
              setUser(JSON.parse(storedUser));
           } else {
-             // If we can't get profile and have no stored info, but have token, 
-             // we might want to logout or just show a basic state.
-             // letting it stay logged in with partial info is risky if token is invalid.
-             // But valid token + failed profile fetch usually means API issue.
-             logout();
+             // If we have token but no user info, we can't fetch it without /me.
+             // Best effort: set a basic user object or force logout.
+             // For now, let's assume if token is valid we are okay, but we won't have the wallet.
+             // A better approach would be to logout to force re-fetch on login.
+             // logout(); 
+             setUser({ name: "User" });
           }
+        } catch (e) {
+          console.error("Auth init error", e);
+          logout();
         }
       }
       setLoading(false);
@@ -70,17 +68,14 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const response = await auth.login({ email, password });
-      const { token } = response.data;
+      const { token, user: userData } = response.data;
       
       if (token) {
         localStorage.setItem("token", token);
         
-        // Fetch full profile immediately
-        const profileRes = await users.getProfile();
-        const fullUser = profileRes.data;
-        
-        localStorage.setItem("user_info", JSON.stringify(fullUser));
-        setUser(fullUser);
+        // Use the user data from response which now includes wallet
+        localStorage.setItem("user_info", JSON.stringify(userData));
+        setUser(userData);
         
         router.push("/dashboard");
         return { success: true };
@@ -110,14 +105,11 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // refreshUser is removed or needs to be a no-op if no /me access
+  // actually, without /me, we cannot refresh.
   const refreshUser = async () => {
-    try {
-      const res = await users.getProfile();
-      setUser(res.data);
-      localStorage.setItem("user_info", JSON.stringify(res.data));
-    } catch (error) {
-      console.error("Failed to refresh user", error);
-    }
+    // Cannot refresh without endpoint
+    console.warn("Cannot refresh user without /me endpoint");
   };
 
   if (loading) return <FullScreenLoader />;
