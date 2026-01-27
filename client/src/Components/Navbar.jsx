@@ -49,7 +49,7 @@ export default function Navbarr() {
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500">
                 <Wallet size={16} />
                 <span className="font-bold text-sm">
-                  ${user.balance ? user.balance.toLocaleString() : '0'}
+                  ${user.wallet ? user.wallet.toLocaleString() : '0'}
                 </span>
               </div>
 
