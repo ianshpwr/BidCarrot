@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 exports.signup = async ({ name, email, password }) => {
   const hashed = await bcrypt.hash(password, 10);
-  const email = req.body.email.toLowerCase();
+  email = email.toLowerCase();
 
   const user = await prisma.user.create({
     data: { name, email, password: hashed }
@@ -14,7 +14,7 @@ exports.signup = async ({ name, email, password }) => {
 };
 
 exports.login = async ({ email, password }) => {
-  const email = req.body.email.toLowerCase();
+  email = email.toLowerCase();
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return { error: "User not found" };
 
