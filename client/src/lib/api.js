@@ -1,3 +1,4 @@
+import axios from 'axios';
 import env from './env';
 
 export class ApiError extends Error {
