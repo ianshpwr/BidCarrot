@@ -49,4 +49,29 @@ then checks if there's current holder of auction and refunds his amount in his w
 then a bid is created with data userId auctionId and amount 
 then updates the auction with id and data as highestBid : amount , currentHolder: userID 
 
+demo user - 
 
+{
+  "message": "Signup successful",
+  "user": {
+    "id": "e907ab1a-fbcb-42c5-8730-c0f3940384af",
+    "name": "test",
+    "email": "test@gmail.com",
+    "password": "$2b$10$wnmf/o18IdWyLpT77Mo.6.42QNEMG08b/4mjXQxzQKp6LFUOVJoaa",
+    "wallet": 50000,
+    "createdAt": "2026-01-26T19:40:20.384Z"
+  }
+}
+
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU5MDdhYjFhLWZiY2ItNDJjNS04NzMwLWMwZjM5NDAzODRhZiIsImlhdCI6MTc2OTQ1NzQ0Mn0.yRKeyHlInAwAxvD4tlfX6e5ZljDF6dL_CkQu6BthdkI"
+}
+
+
+{
+  "title": "grace",
+  "description": "gracethehuman",
+  "basePrice" : "500",
+  "durationMs" : "900000"
+}

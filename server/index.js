@@ -1,6 +1,7 @@
 require("dotenv").config();
 const app = require("./app");
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log("Server running...");
+console.log(process.env.DATABASE_URL);
+app.listen(4000, () => {
+  console.log("Server running on http://localhost:4000");
 });

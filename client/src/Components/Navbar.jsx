@@ -13,7 +13,6 @@ import {
 } from "@/Components/ui/ResizeableNavbar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import supabase from "@/Components/Supabase/Client";
 
 export default function Navbarr() {
   const router = useRouter();
