@@ -10,6 +10,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Loader } from "@/Components/ui/Loader";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+import Image from "next/image";
 
 const THEMES = [
   { id: 'tech', label: 'Technology', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop' },
@@ -24,49 +29,77 @@ export default function Steppr() {
   const { user } = useAuth();
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    basePrice: '',
-    duration: '3600000', // Default 1 hour
-    theme: '',
-  });
-  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const auctionSchema = z.object({
+    title: z.string().min(3, "Title must be at least 3 characters"),
+    basePrice: z.coerce.number().min(1, "Price must be at least $1"),
+    duration: z.string(),
+    description: z.string().min(10, "Description must be at least 10 characters"),
+    theme: z.string().min(1, "Please select a theme"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(auctionSchema),
+    defaultValues: {
+      title: "",
+      basePrice: "", // Initialize as empty for placeholder to show
+      duration: "3600000",
+      description: "",
+      theme: "",
+    },
+  });
+
+  const formData = watch(); // Watch all fields to keep existing UI logic working
+
+  const handleNext = async () => {
+    let isValid = false;
+    if (step === 1) {
+      isValid = await trigger(["title", "basePrice", "duration", "description"]);
+    } else if (step === 2) {
+      isValid = await trigger("theme");
+    }
+    
+    if (isValid) {
+      setStep(step + 1);
+    }
   };
 
-  const handleNext = () => setStep(step + 1);
   const handleBack = () => setStep(step - 1);
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    setError('');
-    
+  const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
-      // Backend expects durationMs, basePrice (Int)
       const payload = {
-        title: formData.title,
-        description: `[${formData.theme.toUpperCase()}] ${formData.description}`,
-        basePrice: parseInt(formData.basePrice),
-        durationMs:parseInt(formData.duration),
+        title: data.title,
+        description: `[${data.theme.toUpperCase()}] ${data.description}`,
+        basePrice: parseInt(data.basePrice),
+        durationMs: parseInt(data.duration),
       };
 
       await auctions.create(payload);
       setSuccess(true);
+      toast.success("Auction created successfully!");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create auction.");
+      const msg = err.message || "Failed to create auction.";
+      toast.error(msg);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   if (success) {
     return (
       <Card className="max-w-xl mx-auto text-center py-12">
+        {/* ... success view ... */}
         <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
           <Check size={40} className="text-black" />
         </div>
@@ -109,29 +142,30 @@ export default function Steppr() {
             <Card>
                <h2 className="text-2xl font-bold mb-6">Item Details</h2>
                <div className="space-y-6">
-                  <Input 
-                    label="Auction Title" 
-                    name="title" 
-                    value={formData.title} 
-                    onChange={handleChange}
-                    placeholder="e.g. Vintage Rolex Submariner"
-                  />
+                  <div>
+                    <Input 
+                      label="Auction Title" 
+                      placeholder="e.g. Vintage Rolex Submariner"
+                      {...register("title")}
+                    />
+                    {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <Input 
-                       label="Base Price ($)" 
-                       name="basePrice" 
-                       type="number"
-                       value={formData.basePrice} 
-                       onChange={handleChange}
-                       placeholder="100"
-                     />
+                     <div>
+                       <Input 
+                         label="Base Price ($)" 
+                         type="number"
+                         placeholder="100"
+                         {...register("basePrice")}
+                       />
+                       {errors.basePrice && <p className="text-red-500 text-xs mt-1">{errors.basePrice.message}</p>}
+                     </div>
                      <div>
                        <label className="text-sm font-medium text-gray-300 ml-1 mb-1 block">Duration</label>
                        <select 
-                         name="duration" 
-                         value={formData.duration} 
-                         onChange={handleChange}
                          className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-yellow-500"
+                         {...register("duration")}
                        >
                          <option value="3600000">1 Hour</option>
                          <option value="21600000">6 Hours</option>
@@ -144,17 +178,16 @@ export default function Steppr() {
                   <div>
                     <label className="text-sm font-medium text-gray-300 ml-1 mb-1 block">Description</label>
                     <textarea 
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
                       rows={4}
                       className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-white"
                       placeholder="Describe your item in detail..."
+                      {...register("description")}
                     />
+                    {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
                   </div>
                </div>
                <div className="flex justify-end mt-8">
-                  <Button onClick={handleNext} disabled={!formData.title || !formData.basePrice}>
+                  <Button onClick={handleNext}>
                     Next Step <ChevronRight size={18} className="ml-1 inline" />
                   </Button>
                </div>
@@ -177,11 +210,17 @@ export default function Steppr() {
                   {THEMES.map((theme) => (
                     <div 
                       key={theme.id} 
-                      onClick={() => setFormData({...formData, theme: theme.id})}
+                      onClick={() => setValue("theme", theme.id)}
                       className={`relative group cursor-pointer rounded-xl overflow-hidden aspect-square border-2 transition-all ${formData.theme === theme.id ? 'border-yellow-500 scale-105' : 'border-transparent hover:border-white/30'}`}
                     >
-                       <img src={theme.image} alt={theme.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                       <Image 
+                         src={theme.image} 
+                         alt={theme.label} 
+                         fill
+                         className="object-cover group-hover:scale-110 transition-transform duration-500" 
+                         sizes="(max-width: 768px) 50vw, 33vw"
+                       />
+                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
                           <span className="font-bold text-white text-lg">{theme.label}</span>
                        </div>
                        {formData.theme === theme.id && (
@@ -192,10 +231,11 @@ export default function Steppr() {
                     </div>
                   ))}
                </div>
+               {errors.theme && <p className="text-red-500 text-sm mt-4 text-center">{errors.theme.message}</p>}
 
                <div className="flex justify-between mt-8">
                   <Button variant="secondary" onClick={handleBack}><ChevronLeft size={18} className="mr-1 inline" /> Back</Button>
-                  <Button onClick={handleNext} disabled={!formData.theme}>Next Step <ChevronRight size={18} className="ml-1 inline" /></Button>
+                  <Button onClick={handleNext}>Next Step <ChevronRight size={18} className="ml-1 inline" /></Button>
                </div>
             </Card>
           </motion.div>
@@ -212,8 +252,13 @@ export default function Steppr() {
                 <h2 className="text-2xl font-bold mb-6">Review & Launch</h2>
                 
                 <div className="glass rounded-xl p-6 mb-8 flex gap-6 items-start">
-                   <div className="w-32 h-32 rounded-lg overflow-hidden shrink-0">
-                      <img src={THEMES.find(t => t.id === formData.theme)?.image} className="w-full h-full object-cover" />
+                   <div className="w-32 h-32 rounded-lg overflow-hidden shrink-0 relative">
+                      <Image 
+                        src={THEMES.find(t => t.id === formData.theme)?.image || THEMES[0].image} 
+                        alt="Theme Preview"
+                        fill
+                        className="object-cover" 
+                      />
                    </div>
                    <div>
                       <h3 className="text-xl font-bold mb-1">{formData.title}</h3>
@@ -222,20 +267,14 @@ export default function Steppr() {
                    </div>
                 </div>
 
-                {error && (
-                  <div className="bg-red-500/10 text-red-500 p-4 rounded-lg mb-6 text-center">
-                    {error}
-                  </div>
-                )}
-
                 <div className="flex justify-between">
                    <Button variant="secondary" onClick={handleBack}>Back</Button>
                    <Button 
-                     onClick={user ? handleSubmit : () => router.push('/login')} 
-                     disabled={loading}
+                     onClick={user ? handleSubmit(onSubmit) : () => router.push('/login')} 
+                     disabled={isLoading}
                      className={`${user ? 'bg-green-500 hover:bg-green-600' : 'bg-white text-black hover:bg-gray-200'} font-bold px-8`}
                    >
-                     {loading ? <div className="scale-50"><Loader /></div> : user ? "Launch Auction" : "Login to Launch"}
+                     {isLoading ? <div className="scale-50"><Loader /></div> : user ? "Launch Auction" : "Login to Launch"}
                    </Button>
                 </div>
              </Card>

@@ -1,0 +1,156 @@
+BIDCARROT CLIENT CODEBASE DOCUMENTATION
+
+This document provides a detailed walkthrough of the client-side codebase, explaining the directory structure, component responsibility, data flow, and a deep dive into the dependencies used.
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+The frontend is built with Next.js 15 (App Router). It uses a "Server First" approach where possible (SEO metadata), but heavily relies on "Client Components" (`"use client"`) for interactivity (bidding, creating auctions, authentication).
+
+================================================================================
+2. DIRECTORY STRUCTURE & FILE RESPONSIBILITIES
+================================================================================
+
+/src
+  /app  -- (Next.js App Router: Folders define routes)
+    |-- layout.js: The "Root Layout". Wraps EVERY page.
+        - Contains `<Navbar>`, `<AuthProvider>`, `<ErrorBoundary>`, and `<Toaster>`.
+        - Responsible for global state and persistent UI.
+    |-- page.js: The "/" route (Landing Page). Renders `Landingpage` component.
+    |-- global.css: Global styles, Tailwind directives, and CSS variables.
+    
+    /login
+      |-- page.jsx: Handles BOTH Login and Signup. 
+          - Uses local state `isLogin` to toggle modes.
+          - Uses `useForm` (react-hook-form) for validation.
+          - Calls `login` or `signup` from `AuthContext`.
+    
+    /dashboard  (Protected)
+      |-- page.jsx: The main user hub.
+          - Wrapped in `<ProtectedRoute>`.
+          - Fetches live auctions via `useAuctions` hook.
+          - Displays `AuctionCardSkeleton` while loading.
+    
+    /auction
+      |-- page.jsx: A list view of all active auctions.
+
+    /bid/[id]  (Dynamic Route)
+      |-- page.jsx: (Server Component) Fetches data ONLY for generating SEO Metadata (`generateMetadata`).
+      |-- AuctionDetailClient.jsx: (Client Component) The actual UI. 
+          - Fetches generic auction data again for interactivity.
+          - Handles real-time bidding updates.
+
+    /createauction (Protected)
+      |-- page.jsx: Wrapper for the creation wizard.
+          - Wrapped in `<ProtectedRoute>`.
+          - Renders `<Steppr>` component.
+
+  /Components
+    |-- ErrorBoundary.jsx: Catches crashes in the component tree.
+    |-- Navbar.jsx: Fixed top navigation.
+    |-- ProtectedRoute.jsx: A "Guard" component. Checks `AuthContext`.
+    
+    /ui -- (Reusable "dumb" components)
+      |-- Button.jsx, Input.jsx, Card.jsx, Loader.jsx, Skeleton.jsx.
+
+    /CreateAuction
+      |-- Steppr.jsx: The complex multi-step form for creating auctions. Uses `framer-motion`.
+
+  /context
+    |-- AuthContext.js: Manages global user state (user object, loading, error) and persistence.
+
+  /lib
+    |-- api.js: Centralized Axios instance with interceptors.
+    |-- env.js: Environment variable validator.
+
+================================================================================
+3. APPLICATION FLOW (USER JOURNEY)
+================================================================================
+
+1. **Initialization (`layout.js` / `AuthContext`)**:
+   - App loads. `AuthProvider` checks `localStorage`.
+   - If token exists -> Sets `user` state.
+
+2. **Authentication (`/login`)**:
+   - User enters credentials.
+   - `useForm` validates input using `zod` schema.
+   - `api.js` POSTs to backend.
+   - On success: Token saved, user redirected to `/dashboard`.
+
+3. **Browsing (`/dashboard`)**:
+   - Page loads -> `ProtectedRoute` verifies user.
+   - `api.js` fetches active auctions.
+   - Grid of auction cards renders using `next/image` for optimization.
+
+4. **Bidding (`/bid/[id]`)**:
+   - Server Component fetches basic info for SEO tags.
+   - Client Component loads. User types bid amount.
+   - "Place Bid" -> Calls API -> `sonner` Toast appears on success.
+
+================================================================================
+4. DEPENDENCIES: THE "HOW, WHY, AND WHERE"
+================================================================================
+
+This section breaks down every major library added to the project.
+
+--------------------------------------------------------------------------------
+A. CORE & INFRASTRUCTURE
+--------------------------------------------------------------------------------
+
+1. axios
+   - WHY: Native `fetch` is verbose when handling global headers (like Auth tokens) and centralized error handling.
+   - HOW: We create a singleton instance using `axios.create()`. We use "Interceptors" to automatically inject the `Authorization: Bearer ...` header into every request if a token exists in localStorage.
+   - WHERE: `src/lib/api.js` (exclusively used here, then imported elsewhere).
+
+2. clsx / tailwind-merge
+   - WHY: Tailwind class strings get messy. If a component has `bg-red-500` by default, but you pass `className="bg-blue-500"`, a simple string concatenation makes "bg-red-500 bg-blue-500" (CSS conflict).
+   - HOW: `tailwind-merge` intelligently overrides the first class with the second. `clsx` handles conditional logic.
+   - WHERE: `src/lib/utils.js` (helper function `cn`), used in all UI components (`src/Components/ui/`).
+
+--------------------------------------------------------------------------------
+B. DATA & FORMS
+--------------------------------------------------------------------------------
+
+3. react-hook-form
+   - WHY: Controlling form inputs with React state (`useState`) causes re-renders on every keystroke, which is slow for complex forms. RHF is unregulated and performant.
+   - HOW: We use the `useForm` hook. Inputs are "registered" (`{...register('email')}`), connecting them to the form state without re-rendering the whole page.
+   - WHERE: `src/app/login/page.jsx` (Login/Signup), `src/Components/CreateAuction/Steppr.jsx` (New Auction Wizard).
+
+4. zod
+   - WHY: We need a schema definition language to strictly check data *before* sending it to the API.
+   - HOW: We define "Schemas" like `z.object({ email: z.string().email() })`.
+   - WHERE: Defined alongside forms in `src/app/login/page.jsx` and `src/Components/CreateAuction/Steppr.jsx`.
+
+5. @hookform/resolvers
+   - WHY: Bridges the gap between `react-hook-form` (state management) and `zod` (validation logic).
+   - HOW: Passed to `useForm({ resolver: zodResolver(mySchema) })`.
+   - WHERE: Wherever `react-hook-form` is used with validation.
+
+--------------------------------------------------------------------------------
+C. UI & UX ENHANCEMENTS
+--------------------------------------------------------------------------------
+
+6. sonner
+   - WHY: We need to show feedback (Success/Error) without blocking the UI (like `alert()` does) or designing custom modals.
+   - HOW: A `<Toaster />` component is placed in the root layout. We call `toast.success("Msg")` from any component.
+   - WHERE: Initialized in `src/app/layout.js`. Triggered in `src/app/login/page.jsx`, `src/Components/CreateAuction/Steppr.jsx`, `src/app/bid/[id]/AuctionDetailClient.jsx`.
+
+7. framer-motion
+   - WHY: CSS transitions are limited for complex flows (like multi-step wizards entering/exiting).
+   - HOW: We replace `<div>` with `<motion.div>` and define `initial`, `animate`, and `exit` states.
+   - WHERE: `src/Components/CreateAuction/Steppr.jsx` (smoothly sliding between form steps).
+
+8. lucide-react
+   - WHY: Consistent, clean, and lightweight SVG icons.
+   - HOW: Imported as individual components (e.g., `<Clock />`, `<User />`).
+   - WHERE: Used throughout the app (Navbar, Dashboard cards, Inputs).
+
+9. cobe
+   - WHY: To create a high-performance, interactive 3D globe for the landing page visual.
+   - HOW: Uses a canvas ref and WebGL to render.
+   - WHERE: `src/Components/ui/Globe.jsx`.
+
+10. next (Images)
+    - WHY: Standard `<img>` tags don't optimize for file size or screen size (responsive).
+    - HOW: The `<Image />` component automatically generates resized versions of images and serves them in modern formats (WebP/AVIF).
+    - WHERE: `src/app/dashboard/page.jsx`, `src/app/auction/page.jsx`, `src/app/bid/[id]/AuctionDetailClient.jsx`.

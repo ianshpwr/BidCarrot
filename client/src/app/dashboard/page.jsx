@@ -7,23 +7,20 @@ import { Card } from "@/Components/ui/Card";
 import { Button } from "@/Components/ui/Button";
 import { Clock, DollarSign, Users, Search } from "lucide-react";
 import { Loader } from "@/Components/ui/Loader";
+import { AuctionCardSkeleton } from "@/Components/Skeletons/AuctionCardSkeleton";
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import ProtectedRoute from "@/Components/ProtectedRoute";
+import Image from "next/image";
 
 export default function Dashboard() {
   const { liveAuctions, loading: auctionsLoading } = useAuctions();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
+  // Manual auth check removed in favor of ProtectedRoute wrapper
 
-  if (authLoading) return <div className="flex justify-center items-center min-h-screen"><Loader /></div>;
-  if (!user) return null; // Prevent flash
 
   // Temporary mock images until backend supports themes
   const getAuctionImage = (category) => {
@@ -36,10 +33,12 @@ export default function Dashboard() {
     <Card key={auction.id} className="group hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden p-0">
        {/* Image Background */}
        <div className="absolute inset-0 z-0">
-          <img 
+          <Image 
             src={getAuctionImage(auction.title)} 
             alt={auction.title} 
-            className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
+            fill
+            className="object-cover opacity-60 group-hover:opacity-40 transition-opacity"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
        </div>
@@ -75,44 +74,49 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-        <div>
-           <h1 className="text-4xl md:text-6xl font-black gradient-text mb-4">Live Auctions</h1>
-           <p className="text-gray-400 max-w-xl text-lg">
-             Discover exclusive items and place your bids in real-time. Experience the thrill of the auction.
-           </p>
+    <ProtectedRoute>
+      <div className="min-h-screen pt-36 pb-12 px-4 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+          {/* ... content ... */}
+          <div>
+             <h1 className="text-4xl md:text-6xl font-black gradient-text mb-4">Live Auctions</h1>
+             <p className="text-gray-400 max-w-xl text-lg">
+               Discover exclusive items and place your bids in real-time. Experience the thrill of the auction.
+             </p>
+          </div>
+          <div className="flex gap-4">
+             <Link href="/createauction">
+                <Button className="bg-white text-black hover:bg-gray-200 border-none font-bold">
+                  + List Item
+                </Button>
+             </Link>
+          </div>
         </div>
-        <div className="flex gap-4">
-           <Link href="/createauction">
-              <Button className="bg-white text-black hover:bg-gray-200 border-none font-bold">
-                + List Item
-              </Button>
-           </Link>
-        </div>
-      </div>
-
-      {auctionsLoading ? (
-        <div className="flex justify-center items-center py-20">
-           <Loader />
-        </div>
-      ) : liveAuctions.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {liveAuctions.map(renderAuctionCard)}
-        </div>
-      ) : (
-        <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
-           <h2 className="text-2xl font-bold text-gray-500 mb-4">No Active Auctions</h2>
-           <p className="text-gray-400 mb-8">Be the first to list an exclusive item!</p>
-           <Link href="/createauction">
-              <Button>Create Auction</Button>
-           </Link>
-        </div>
-      )}
-      
-      <div className="mt-20">
+  
+        {auctionsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+             {[1, 2, 3, 4, 5, 6].map((i) => (
+               <AuctionCardSkeleton key={i} />
+             ))}
+          </div>
+        ) : liveAuctions.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {liveAuctions.map(renderAuctionCard)}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
+             <h2 className="text-2xl font-bold text-gray-500 mb-4">No Active Auctions</h2>
+             <p className="text-gray-400 mb-8">Be the first to list an exclusive item!</p>
+             <Link href="/createauction">
+                <Button>Create Auction</Button>
+             </Link>
+          </div>
+        )}
+        
+        <div className="mt-20">
          <Footer />
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -1,44 +1,67 @@
-"use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/Components/ui/Button";
 import { Input } from "@/Components/ui/Input";
 import { Card } from "@/Components/ui/Card";
 import Link from "next/link";
-
 import { Loader } from "@/Components/ui/Loader";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
 
 export default function AuthPage() {
   const { login, signup } = useAuth();
-  // ... existing state ...
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const loginSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const signupSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(isLogin ? loginSchema : signupSchema),
+  });
+
+  // Reset form when switching modes
+  useEffect(() => {
+    reset();
+  }, [isLogin, reset]);
+
+  const onSubmit = async (data) => {
     setLoading(true);
-
     try {
       if (isLogin) {
-        await login(formData.email, formData.password);
+        const res = await login(data.email, data.password);
+        if (res.success) {
+          toast.success("Welcome back!");
+        } else {
+          toast.error(res.error || "Login failed");
+        }
       } else {
-        await signup(formData.name, formData.email, formData.password);
-        alert("Signup successful! Please login.");
-        setIsLogin(true);
+        const res = await signup(data.name, data.email, data.password);
+        if (res.success) {
+          toast.success("Account created! Please login.");
+          setIsLogin(true);
+          reset();
+        } else {
+          toast.error(res.error || "Signup failed");
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || "An error occurred");
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -58,41 +81,35 @@ export default function AuthPage() {
           {isLogin ? "Enter your credentials to access your account" : "Start your premium auction journey today"}
         </p>
 
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded-lg mb-4 text-sm text-center">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {!isLogin && (
-            <Input
-              label="Full Name"
-              name="name"
-              placeholder="John Doe"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <Input
+                label="Full Name"
+                placeholder="John Doe"
+                {...register("name")}
+              />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+            </div>
           )}
-          <Input
-            label="Email Address"
-            type="email"
-            name="email"
-            placeholder="you@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            label="Password"
-            type="password"
-            name="password"
-            placeholder="••••••••"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+          <div>
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="you@example.com"
+              {...register("email")}
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          </div>
+          <div>
+            <Input
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              {...register("password")}
+            />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+          </div>
 
           <Button
             type="submit"
